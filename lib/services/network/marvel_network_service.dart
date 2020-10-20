@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:marvels_app/api_key/marvels_api_key.dart';
 import 'package:marvels_app/services/custom_exceptions/failed_exception.dart';
-import 'package:marvels_app/services/network_service.dart';
+import 'package:marvels_app/services/network/network_service.dart';
 import 'package:http/http.dart' as http;
 
 class MarvelNetworkService implements INetworkService {

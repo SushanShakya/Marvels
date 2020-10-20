@@ -1,5 +1,5 @@
 import 'package:marvels_app/services/custom_exceptions/failed_exception.dart';
-import 'package:marvels_app/services/marvel_network_service.dart';
+import 'package:marvels_app/services/network/marvel_network_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as https;
@@ -43,7 +43,7 @@ void main() {
 
         service
             .get("/v1/public/characters")
-            .catchError((e) => expect(e, expected));
+            .catchError((e) => expect(e.toString(), expected));
       });
       test("throws FailedException when status code is not 200", () {
         final expected = "Error";
@@ -52,7 +52,7 @@ void main() {
 
         service
             .get("/v1/public/characters")
-            .catchError((e) => expect(e, expected));
+            .catchError((e) => expect(e.toString(), expected));
       });
       test("returns Map<String,dynamic> response when everything fine", () {
         final expected = "Error";

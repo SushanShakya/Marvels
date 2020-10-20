@@ -1,14 +1,90 @@
-import 'dart:convert';
-
 import 'package:marvels_app/models/api_response.dart';
 import 'package:marvels_app/models/marvel_character.dart';
 import 'package:marvels_app/repository/marvels_api_repository.dart';
 import 'package:marvels_app/services/custom_exceptions/failed_exception.dart';
-import 'package:marvels_app/services/network_service.dart';
+import 'package:marvels_app/services/network/network_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 class MockService extends Mock implements INetworkService {}
+
+void main() {
+  group("MarvelsRepository", () {
+    MarvelsApiRepository repo;
+    INetworkService service;
+
+    setUp(() {
+      service = MockService();
+      repo = MarvelsApiRepository(service);
+    });
+
+    tearDown(() {
+      clearInteractions(service);
+      reset(service);
+      service = null;
+      repo = null;
+    });
+
+    serviceGet(String url, response) =>
+        when(service.get(url)).thenAnswer((realInvocation) async => response);
+
+    serviceGetError(String url, Exception error) =>
+        when(service.get(url)).thenThrow(error);
+
+    group("Characters method", () {
+      test(
+          "getAllCharacters() returns ApiResponse with error status when error occurs",
+          () {
+        final expected =
+            ApiResponse<List<MarvelCharacter>>.error("Failed to Load Data");
+
+        serviceGetError(
+            "/v1/public/characters", FailedException("Failed to Load Data"));
+
+        repo.getAllCharacters().then((value) => expect(value, expected));
+      });
+
+      test(
+          "getAllCharacters() returns ApiResponse with Success status when success",
+          () {
+        final Status expected = Status.success;
+        serviceGet("/v1/public/characters", fakeCharactersResponse);
+        repo.getAllCharacters().then((value) => expect(value.status, expected));
+      });
+
+      test(
+          "getAllCharacters() returns ApiResponse with List<MarvelCharacter> when success",
+          () {
+        final List<MarvelCharacter> expected = [
+          MarvelCharacter(
+              id: 1011334,
+              name: "3-D Man",
+              description: "",
+              image:
+                  "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784.jpg",
+              urls: <Url>[
+                Url(
+                    type: "detail",
+                    url:
+                        "http://marvel.com/characters/74/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
+                Url(
+                    type: "wiki",
+                    url:
+                        "http://marvel.com/universe/3-D_Man_(Chandler)?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
+                Url(
+                    type: "comiclink",
+                    url:
+                        "http://marvel.com/comics/characters/1011334/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d")
+              ])
+        ];
+
+        serviceGet("/v1/public/characters", fakeCharactersResponse);
+
+        repo.getAllCharacters().then((value) => expect(value.data, expected));
+      });
+    });
+  });
+}
 
 final fakeCharactersResponse = {
   "code": 200,
@@ -273,81 +349,3 @@ final fakeCharactersResponse = {
     ]
   }
 };
-
-void main() {
-  group("MarvelsRepository", () {
-    MarvelsApiRepository repo;
-    INetworkService service;
-
-    setUp(() {
-      service = MockService();
-      repo = MarvelsApiRepository(service);
-    });
-
-    tearDown(() {
-      clearInteractions(service);
-      reset(service);
-      service = null;
-      repo = null;
-    });
-
-    serviceGet(String url, response) =>
-        when(service.get(url)).thenAnswer((realInvocation) async => response);
-
-    serviceGetError(String url, Exception error) =>
-        when(service.get(url)).thenThrow(error);
-
-    group("Characters method", () {
-      test(
-          "getAllCharacters() returns ApiResponse with error status when error occurs",
-          () {
-        final expected =
-            ApiResponse<List<MarvelCharacter>>.error("Failed to Load Data");
-
-        serviceGetError(
-            "/v1/public/characters", FailedException("Failed to Load Data"));
-
-        repo.getAllCharacters().then((value) => expect(value, expected));
-      });
-
-      test(
-          "getAllCharacters() returns ApiResponse with Success status when success",
-          () {
-        final Status expected = Status.success;
-        serviceGet("/v1/public/characters", fakeCharactersResponse);
-        repo.getAllCharacters().then((value) => expect(value.status, expected));
-      });
-
-      test(
-          "getAllCharacters() returns ApiResponse with List<MarvelCharacter> when success",
-          () {
-        final List<MarvelCharacter> expected = [
-          MarvelCharacter(
-              id: 1011334,
-              name: "3-D Man",
-              description: "",
-              image:
-                  "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784.jpg",
-              urls: <Url>[
-                Url(
-                    type: "detail",
-                    url:
-                        "http://marvel.com/characters/74/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-                Url(
-                    type: "wiki",
-                    url:
-                        "http://marvel.com/universe/3-D_Man_(Chandler)?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-                Url(
-                    type: "comiclink",
-                    url:
-                        "http://marvel.com/comics/characters/1011334/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d")
-              ])
-        ];
-
-        serviceGet("/v1/public/characters", fakeCharactersResponse);
-
-        repo.getAllCharacters().then((value) => expect(value.data, expected));
-      });
-    });
-  });
-}

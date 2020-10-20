@@ -1,7 +1,7 @@
 import 'package:marvels_app/models/api_response.dart';
 import 'package:marvels_app/models/marvel_character.dart';
 import 'package:marvels_app/repository/base_repository.dart';
-import 'package:marvels_app/services/network_service.dart';
+import 'package:marvels_app/services/network/network_service.dart';
 
 class MarvelsApiRepository implements IRepository {
   INetworkService _service;
