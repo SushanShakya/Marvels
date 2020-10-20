@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class MarvelCharacter {
@@ -20,6 +22,29 @@ class MarvelCharacter {
         image: map['thumbnail']['path'] + "." + map['thumbnail']['extension'],
         urls: List<Url>.from(map["urls"].map((x) => Url.fromJson(x))));
   }
+
+  factory MarvelCharacter.fromFile(String json) {
+    if (json == null) return null;
+
+    final map = jsonDecode(json);
+
+    return MarvelCharacter(
+        id: map['id'],
+        name: map['name'],
+        description: map['description'],
+        image: map['image'],
+        urls: List<Url>.from(map["urls"].map((x) => Url.fromJson(x))));
+  }
+
+  Map<String, dynamic> toMap() => {
+        "id": id,
+        "name": name,
+        "description": description,
+        "image": image,
+        "urls": List<dynamic>.from(urls.map((x) => x.toJson()))
+      };
+
+  String toJson() => jsonEncode(toMap());
 
   @override
   bool operator ==(Object o) {
