@@ -1,3 +1,3 @@
 abstract class INetworkService {
-  Future get(String url);
+  Future<Map<String, dynamic>> get(String url);
 }
