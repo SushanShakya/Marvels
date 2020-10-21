@@ -32,22 +32,29 @@ class _HomeState extends State<Home> {
               return <Widget>[
                 SliverAppBar(
                   elevation: 0.0,
+                  pinned: true,
                   expandedHeight: MediaQuery.of(context).size.height / 3,
+                  titleSpacing: 0.0,
+                  title: Image.asset(
+                    "images/splash.png",
+                    height: 100,
+                  ),
+                  automaticallyImplyLeading: false,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Image.asset(
                       "images/background.jpg",
                       fit: BoxFit.cover,
                     ),
                   ),
+                  actions: [
+                    IconButton(icon: Icon(Icons.search), onPressed: () {})
+                  ],
                   floating: true,
                   centerTitle: true,
                 )
               ];
             },
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _buildBody(context),
-            ),
+            body: _buildBody(context),
           ),
         ));
   }
@@ -60,6 +67,7 @@ class _HomeState extends State<Home> {
 
         if (state is MarvelCharactersSuccess) {
           return GridView.builder(
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
               physics: BouncingScrollPhysics(),
               itemCount: state.characters.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
