@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marvels_app/cubits/marvel_characters/marvelcharacters_cubit.dart';
+
 import 'package:marvels_app/models/marvel_character.dart';
 import 'package:marvels_app/repository/marvels_api_repository.dart';
 import 'package:marvels_app/services/network/marvel_network_service.dart';
@@ -13,116 +15,107 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   MarvelCharactersCubit cubit;
 
-  List<MarvelCharacter> characters;
-
   @override
   void initState() {
     super.initState();
     cubit = MarvelCharactersCubit(MarvelsApiRepository(MarvelNetworkService()));
     cubit.getAllCharacters();
-    characters = [
-      MarvelCharacter(
-          id: 1011334,
-          name: "3-D Man",
-          description: "",
-          image:
-              "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784.jpg",
-          urls: <Url>[
-            Url(
-                type: "detail",
-                url:
-                    "http://marvel.com/characters/74/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-            Url(
-                type: "wiki",
-                url:
-                    "http://marvel.com/universe/3-D_Man_(Chandler)?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-            Url(
-                type: "comiclink",
-                url:
-                    "http://marvel.com/comics/characters/1011334/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d")
-          ]),
-      MarvelCharacter(
-          id: 1017100,
-          name: "A-Bomb (HAS)",
-          description: "",
-          image:
-              "http://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16.jpg",
-          urls: <Url>[
-            Url(
-                type: "detail",
-                url:
-                    "http://marvel.com/characters/74/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-            Url(
-                type: "wiki",
-                url:
-                    "http://marvel.com/universe/3-D_Man_(Chandler)?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
-            Url(
-                type: "comiclink",
-                url:
-                    "http://marvel.com/comics/characters/1011334/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d")
-          ])
-    ];
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => cubit,
-      child: Scaffold(
-        body: _buildSlivers(context),
-      ),
-    );
+        create: (context) => cubit,
+        child: Scaffold(
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  elevation: 0.0,
+                  expandedHeight: MediaQuery.of(context).size.height / 3,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Image.asset(
+                      "images/background.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  floating: true,
+                  centerTitle: true,
+                )
+              ];
+            },
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _buildBody(context),
+            ),
+          ),
+        ));
   }
 
-  Widget _buildSlivers(BuildContext context) {
-    return CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          elevation: 0.0,
-          expandedHeight: MediaQuery.of(context).size.height / 3,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Image.asset(
-              "images/background.jpg",
-              fit: BoxFit.cover,
-            ),
-          ),
-          floating: true,
-          centerTitle: true,
-        ),
-        SliverPadding(
-          padding: EdgeInsets.all(10.0),
-          sliver: SliverToBoxAdapter(
-            child: BlocBuilder<MarvelCharactersCubit, MarvelCharactersState>(
-              builder: (context, state) {
-                if (state is MarvelCharactersFailed)
-                  return _buildFailed(context, state.message);
-                if (state is MarvelCharactersSuccess)
-                  return SliverGrid(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        MarvelCharacter character = characters[index];
-                        return Card(
+  Widget _buildBody(BuildContext context) {
+    return BlocBuilder<MarvelCharactersCubit, MarvelCharactersState>(
+      builder: (context, state) {
+        if (state is MarvelCharactersFailed)
+          return _buildFailed(context, state.message);
+
+        if (state is MarvelCharactersSuccess) {
+          return GridView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: state.characters.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  childAspectRatio: 11 / 16,
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 5.0,
+                  mainAxisSpacing: 5.0),
+              itemBuilder: (context, index) {
+                MarvelCharacter character = state.characters[index];
+                return Card(
+                  color: Colors.black,
+                  shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(20.0))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: SizedBox(
+                          child: CachedNetworkImage(
+                              imageUrl: character.image, fit: BoxFit.fitHeight),
+                        ),
+                      ),
+                      Divider(
+                        thickness: 5.0,
+                        color: Colors.red,
+                        height: 0.0,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 10.0),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Image.network(character.image),
-                              )
+                              Text(
+                                character.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "RobotoCondensed",
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
-                        );
-                      }, childCount: characters.length),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 11 / 16,
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 5.0,
-                          mainAxisSpacing: 5.0));
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              });
+        }
 
-                return _buildLoading();
-              },
-            ),
-          ),
-        )
-      ],
+        return _buildLoading();
+      },
     );
   }
 
