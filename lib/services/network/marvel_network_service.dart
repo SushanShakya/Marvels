@@ -11,19 +11,17 @@ class MarvelNetworkService implements INetworkService {
   @override
   Future<Map<String, dynamic>> get(String url) async {
     try {
-      print(md5.convert(utf8.encode(privateKey + publicKey)).toString());
-
-      print(DateTime.now().millisecondsSinceEpoch.toString());
-
+      final ts = DateTime.now().millisecondsSinceEpoch.toString();
       final response = await http.get(
           _baseUrl +
               url +
-              "?ts=" +
-              DateTime.now().millisecondsSinceEpoch.toString() +
-              "&apiKey=" +
-              publicKey +
-              "&hash=" +
-              md5.convert(utf8.encode(privateKey + publicKey)).toString(),
+              "?ts=$ts&apikey=$publicKey&hash=${md5.convert(utf8.encode(ts + privateKey + publicKey)).toString()}",
+          // "?ts=" +
+          // ts +
+          // "&apiKey=" +
+          // publicKey +
+          // "&hash=" +
+          // md5.convert(utf8.encode(ts+privateKey + publicKey)).toString(),
           headers: {"content-type": "application/json"});
 
       return _getResponse(response);
