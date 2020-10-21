@@ -19,7 +19,10 @@ class MarvelCharacter {
         id: map['id'],
         name: map['name'],
         description: map['description'],
-        image: map['thumbnail']['path'] + "." + map['thumbnail']['extension'],
+        image: map['thumbnail']['path'] +
+            "/landscape_large" +
+            "." +
+            map['thumbnail']['extension'],
         urls: List<Url>.from(map["urls"].map((x) => Url.fromJson(x))));
   }
 

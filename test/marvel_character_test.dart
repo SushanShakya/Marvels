@@ -74,7 +74,7 @@ void main() {
         id: 1011334,
         name: "3-D Man",
         description: "",
-        image: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784.jpg",
+        image: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_large.jpg",
         urls: <Url>[
           Url(
               type: "detail",
