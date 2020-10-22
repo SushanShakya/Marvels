@@ -75,6 +75,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
         ),
       ),
       body: PageView.builder(
+          itemCount: widget.characters.length,
           physics: BouncingScrollPhysics(),
           controller: controller,
           itemBuilder: (context, index) {
