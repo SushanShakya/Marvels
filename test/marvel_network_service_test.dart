@@ -26,9 +26,9 @@ void main() {
     final exception = FailedException("Error");
 
     group("get()", () {
-      final String _baseUrl = "https://gateway.marvel.com:443";
+      final String _baseUrl = "https://gateway.marvel.com";
       getErrorCall(String url, Exception exception) {
-        when(http.get(argThat(startsWith(url)))).thenThrow(exception);
+        when(http.get(argThat(startsWith(_baseUrl + url)))).thenThrow(exception);
       }
 
       getCall(String url, https.Response response) {

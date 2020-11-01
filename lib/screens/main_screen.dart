@@ -1,23 +1,36 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:marvels_app/screens/comics.dart';
 import 'package:marvels_app/screens/home.dart';
+import 'package:marvels_app/search/marvel_search_delegate.dart';
 
 class MainScreen extends StatelessWidget {
+  final PageController controller = PageController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Home(),
+      body: PageView(
+        controller: controller,
+        children: [Home(), Comics()],
+      ),
       bottomNavigationBar: Container(
         height: kToolbarHeight - 10.0,
         color: Theme.of(context).primaryColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _navItem(Icons.dashboard_outlined, () {}),
-            _navItem(Icons.search_outlined, () {}),
-            _navItem(Icons.library_books_outlined, () {}),
+            _navItem(Icons.dashboard_outlined, () {
+              controller.animateToPage(0,
+                  duration: Duration(seconds: 1), curve: Curves.ease);
+            }),
+            _navItem(Icons.search_outlined, () {
+              showSearch(context: context, delegate: MarvelSearchDelegate());
+            }),
+            _navItem(Icons.library_books_outlined, () {
+              controller.animateToPage(1,
+                  duration: Duration(seconds: 1), curve: Curves.ease);
+            }),
             _navItem(Icons.exit_to_app_outlined, () {
               showDialog(
                   context: context,

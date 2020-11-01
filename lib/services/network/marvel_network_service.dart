@@ -9,19 +9,13 @@ class MarvelNetworkService implements INetworkService {
   final String _baseUrl = "http://gateway.marvel.com";
 
   @override
-  Future<Map<String, dynamic>> get(String url) async {
+  Future<Map<String, dynamic>> get(String url,[String params]) async {
     try {
       final ts = DateTime.now().millisecondsSinceEpoch.toString();
       final response = await http.get(
           _baseUrl +
               url +
-              "?ts=$ts&apikey=$publicKey&hash=${md5.convert(utf8.encode(ts + privateKey + publicKey)).toString()}",
-          // "?ts=" +
-          // ts +
-          // "&apiKey=" +
-          // publicKey +
-          // "&hash=" +
-          // md5.convert(utf8.encode(ts+privateKey + publicKey)).toString(),
+              "?ts=$ts&apikey=$publicKey&hash=${md5.convert(utf8.encode(ts + privateKey + publicKey)).toString()}${params??""}",
           headers: {"content-type": "application/json"});
 
       return _getResponse(response);

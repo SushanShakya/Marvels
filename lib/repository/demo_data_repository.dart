@@ -13,4 +13,10 @@ class DemoDataRepository implements IRepository {
     return ApiResponse.success(List<MarvelCharacter>.from(
         jsonDecode(json).map((x) => MarvelCharacter.fromFile(x)).toLIst()));
   }
+
+  @override
+  Future<ApiResponse<List<MarvelCharacter>>> getCharactersWhoseNameStartsWith(String name) {
+    // TODO: implement getCharactersWhoseNameStartsWith
+    throw UnimplementedError();
+  }
 }

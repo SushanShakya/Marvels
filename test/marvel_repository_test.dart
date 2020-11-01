@@ -25,16 +25,15 @@ void main() {
       repo = null;
     });
 
-    serviceGet(String url, response) =>
-        when(service.get(url)).thenAnswer((realInvocation) async => response);
+    serviceGet(String url, response, [String params]) =>
+        when(service.get(url, params))
+            .thenAnswer((realInvocation) async => response);
 
-    serviceGetError(String url, Exception error) =>
-        when(service.get(url)).thenThrow(error);
+    serviceGetError(String url, Exception error, [String params]) =>
+        when(service.get(url, params)).thenThrow(error);
 
-    group("Characters method", () {
-      test(
-          "getAllCharacters() returns ApiResponse with error status when error occurs",
-          () {
+    group("getAllCharacters()", () {
+      test("returns ApiResponse with error status when error occurs", () {
         final expected =
             ApiResponse<List<MarvelCharacter>>.error("Failed to Load Data");
 
@@ -44,24 +43,20 @@ void main() {
         repo.getAllCharacters().then((value) => expect(value, expected));
       });
 
-      test(
-          "getAllCharacters() returns ApiResponse with Success status when success",
-          () {
+      test("returns ApiResponse with Success status when success", () {
         final Status expected = Status.success;
         serviceGet("/v1/public/characters", fakeCharactersResponse);
         repo.getAllCharacters().then((value) => expect(value.status, expected));
       });
 
-      test(
-          "getAllCharacters() returns ApiResponse with List<MarvelCharacter> when success",
-          () {
+      test("returns ApiResponse with List<MarvelCharacter> when success", () {
         final List<MarvelCharacter> expected = [
           MarvelCharacter(
               id: 1011334,
               name: "3-D Man",
               description: "",
               image:
-                  "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784.jpg",
+                  "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_large.jpg",
               urls: <Url>[
                 Url(
                     type: "detail",
@@ -81,6 +76,60 @@ void main() {
         serviceGet("/v1/public/characters", fakeCharactersResponse);
 
         repo.getAllCharacters().then((value) => expect(value.data, expected));
+      });
+    });
+
+    group("getCharactersWhoseNameStartsWith()", () {
+      test("returns ApiResponse with error status when error occurs", () {
+        final expected =
+            ApiResponse<List<MarvelCharacter>>.error("Failed to Load Data");
+
+        serviceGetError("/v1/public/characters",
+            FailedException("Failed to Load Data"), "&nameStartsWith=Cap");
+
+        repo
+            .getCharactersWhoseNameStartsWith("Cap")
+            .then((value) => expect(value, expected));
+      });
+      test("returns ApiResponse with Success status when success", () {
+        final Status expected = Status.success;
+        serviceGet("/v1/public/characters", fakeCharactersResponse,
+            "&nameStartsWith=Cap");
+        repo
+            .getCharactersWhoseNameStartsWith("Cap")
+            .then((value) => expect(value.status, expected));
+      });
+
+      test("returns ApiResponse with List<MarvelCharacter> when success", () {
+        final List<MarvelCharacter> expected = [
+          MarvelCharacter(
+              id: 1011334,
+              name: "3-D Man",
+              description: "",
+              image:
+                  "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_large.jpg",
+              urls: <Url>[
+                Url(
+                    type: "detail",
+                    url:
+                        "http://marvel.com/characters/74/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
+                Url(
+                    type: "wiki",
+                    url:
+                        "http://marvel.com/universe/3-D_Man_(Chandler)?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d"),
+                Url(
+                    type: "comiclink",
+                    url:
+                        "http://marvel.com/comics/characters/1011334/3-d_man?utm_campaign=apiRef&utm_source=6a9451a902cf5312d49d9b2b6426009d")
+              ])
+        ];
+
+        serviceGet("/v1/public/characters", fakeCharactersResponse,
+            "&nameStartsWith=Cap");
+
+        repo
+            .getCharactersWhoseNameStartsWith("Cap")
+            .then((value) => expect(value.data, expected));
       });
     });
   });

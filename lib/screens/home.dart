@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marvels_app/cubits/marvel_characters/marvelcharacters_cubit.dart';
 import 'package:marvels_app/repository/marvels_api_repository.dart';
 import 'package:marvels_app/screens/widgets/characters_grid.dart';
+import 'package:marvels_app/search/marvel_search_delegate.dart';
 import 'package:marvels_app/services/network/marvel_network_service.dart';
 
 class Home extends StatefulWidget {
@@ -45,7 +46,13 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   actions: [
-                    IconButton(icon: Icon(Icons.search), onPressed: () {})
+                    IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          showSearch(
+                              context: context,
+                              delegate: MarvelSearchDelegate());
+                        })
                   ],
                   floating: true,
                   centerTitle: true,

@@ -19,4 +19,18 @@ class MarvelsApiRepository implements IRepository {
       return ApiResponse<List<MarvelCharacter>>.error(e.toString());
     }
   }
+
+  @override
+  Future<ApiResponse<List<MarvelCharacter>>> getCharactersWhoseNameStartsWith(
+      String name) async {
+    try {
+      final response =
+          await _service.get("/v1/public/characters", "&nameStartsWith=$name");
+      return ApiResponse<List<MarvelCharacter>>.success(
+          List<MarvelCharacter>.from(response['data']['results']
+              .map((e) => MarvelCharacter.fromMap(e))));
+    } catch (e) {
+      return ApiResponse<List<MarvelCharacter>>.error(e.toString());
+    }
+  }
 }

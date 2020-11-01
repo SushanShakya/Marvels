@@ -12,8 +12,10 @@ class MarvelsApp extends StatelessWidget {
       theme: ThemeData(
           primaryColor: Color(0xFF202020),
           bottomAppBarTheme: BottomAppBarTheme(color: Color(0xFF202020)),
-          buttonTheme: ButtonThemeData(
-            padding: EdgeInsets.all(5.0)
+          buttonTheme: ButtonThemeData(padding: EdgeInsets.all(5.0)),
+          appBarTheme: AppBarTheme(
+            elevation: 0.0,
+            color: Color(0xFF202020),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
               backgroundColor: Color(0xFF202020),
