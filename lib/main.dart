@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marvels_app/repository/marvels_api_repository.dart';
 
 import 'package:marvels_app/screens/main_screen.dart';
+import 'package:marvels_app/services/network/marvel_network_service.dart';
+
+import 'cubits/marvel_characters/marvelcharacters_cubit.dart';
+import 'cubits/search_characters/searchcharacters_cubit.dart';
 
 void main() => runApp(MarvelsApp());
 
@@ -28,7 +34,19 @@ class MarvelsApp extends StatelessWidget {
               )),
           primaryIconTheme: IconThemeData(color: Colors.white),
           iconTheme: IconThemeData(color: Colors.white)),
-      home: MainScreen(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => SearchCharactersCubit(
+                MarvelsApiRepository(MarvelNetworkService())),
+          ),
+          BlocProvider(
+            create: (context) => MarvelCharactersCubit(
+                MarvelsApiRepository(MarvelNetworkService())),
+          )
+        ],
+        child: MainScreen(),
+      ),
     );
   }
 }

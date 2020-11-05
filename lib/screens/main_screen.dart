@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:marvels_app/cubits/marvel_characters/marvelcharacters_cubit.dart';
+import 'package:marvels_app/cubits/search_characters/searchcharacters_cubit.dart';
 import 'package:marvels_app/screens/comics.dart';
 import 'package:marvels_app/screens/home.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marvels_app/search/marvel_search_delegate.dart';
 
-class MainScreen extends StatelessWidget {
-  final PageController controller = PageController();
+class MainScreen extends StatefulWidget {
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController();
+    context.bloc<MarvelCharactersCubit>().getAllCharacters();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
+        physics: NeverScrollableScrollPhysics(),
         controller: controller,
         children: [Home(), Comics()],
       ),
@@ -21,15 +37,16 @@ class MainScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _navItem(Icons.dashboard_outlined, () {
-              controller.animateToPage(0,
-                  duration: Duration(seconds: 1), curve: Curves.ease);
+              controller.jumpToPage(0);
             }),
             _navItem(Icons.search_outlined, () {
-              showSearch(context: context, delegate: MarvelSearchDelegate());
+              showSearch(
+                  context: context,
+                  delegate: MarvelSearchDelegate(
+                      context.bloc<SearchCharactersCubit>()));
             }),
             _navItem(Icons.library_books_outlined, () {
-              controller.animateToPage(1,
-                  duration: Duration(seconds: 1), curve: Curves.ease);
+              controller.jumpToPage(1);
             }),
             _navItem(Icons.exit_to_app_outlined, () {
               showDialog(
